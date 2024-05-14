@@ -31,4 +31,7 @@ class CrossEntropyLossLayer(nn.Module):
             - Make use of pytorch documentation: https://pytorch.org/docs/stable/index.html
             - Not that this is different from torch.nn.CrossEntropyLoss, as it doesn't perform softmax, but anticipates the result to already be normalized.
         """
-        raise NotImplementedError("Your Code Goes Here")
+        n = y_pred.size(0)
+        probs = y_pred[torch.arange(n), y_true]
+        
+        return -torch.log(probs).mean()

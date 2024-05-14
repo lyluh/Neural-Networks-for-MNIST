@@ -25,4 +25,10 @@ class ReLULayer(nn.Module):
             - YOU ARE NOT ALLOWED to use torch.nn.ReLU (or it's functional counterparts) in this class
             - Make use of pytorch documentation: https://pytorch.org/docs/stable/index.html
         """
-        raise NotImplementedError("Your Code Goes Here")
+        flat_x = x.view(-1)
+
+        for i, val in enumerate(flat_x):
+            if flat_x[i] <= 0: flat_x[i] = 0
+        
+        return flat_x.view(x.shape)
+            

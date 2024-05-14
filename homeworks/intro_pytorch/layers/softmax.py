@@ -31,4 +31,10 @@ class SoftmaxLayer(nn.Module):
             - YOU ARE NOT ALLOWED to use torch.nn.Softmax (or it's functional counterparts) in this class.
             - Make use of pytorch documentation: https://pytorch.org/docs/stable/index.html
         """
-        raise NotImplementedError("Your Code Goes Here")
+        x = x - torch.max(x)
+
+        num = torch.exp(x)
+        den = torch.sum(torch.exp(x), dim=1, keepdim=True)
+        x = num / den
+        
+        return x
