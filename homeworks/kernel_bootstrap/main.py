@@ -168,7 +168,7 @@ def rbf_param_search(
     best_lambda = None
     best_gamma = None
 
-    possible_lambdas = [10 ** i for i in np.linspace(-5, -1, 5)]
+    possible_lambdas = [10 ** i for i in np.linspace(-5, -1)]
     median_distance_squared = np.median(np.subtract.outer(x, x) ** 2)
     possible_gammas = [1 / median_distance_squared]
 
@@ -212,7 +212,7 @@ def poly_param_search(
     best_lambda = None
     best_d = None
     
-    lambdas = [10 ** i for i in np.linspace(-5, -1, 5)]
+    lambdas = [10 ** i for i in np.linspace(-5, -1)]
     ds = list(range(5, 26))
     
     for _lambda, d in itertools.product(lambdas, ds):

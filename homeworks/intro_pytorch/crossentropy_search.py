@@ -60,8 +60,65 @@ def crossentropy_parameter_search(
                 }
             }
     """
-    raise NotImplementedError("Your Code Goes Here")
+    train_loader = DataLoader(dataset_train, batch_size=32)
+    val_loader = DataLoader(dataset_val, batch_size=32)
 
+    models = {
+        "Linear Regression": 
+            nn.Sequential(
+            LinearLayer(2, 2, generator=RNG),
+            SigmoidLayer()
+        ),
+        "One Hidden Layer (Sigmoid)": 
+            nn.Sequential(
+            LinearLayer(2, 2, generator=RNG),
+            SigmoidLayer(),
+            LinearLayer(2, 2, generator=RNG),
+            SigmoidLayer()
+        ),
+        "One Hidden Layer (ReLU)": 
+            nn.Sequential(
+            LinearLayer(2, 2, generator=RNG),
+            ReLULayer(),
+            LinearLayer(2, 2, generator=RNG),
+            SigmoidLayer()
+        ),
+        "Two Hidden Layers (Sigmoid, ReLU)": 
+            nn.Sequential(
+            LinearLayer(2, 2, generator=RNG),
+            SigmoidLayer(),
+            LinearLayer(2, 2, generator=RNG),
+            ReLULayer(),
+            LinearLayer(2, 2, generator=RNG),
+            SigmoidLayer()
+        ),
+        "Two Hidden Layers (ReLU, Sigmoid)": 
+            nn.Sequential(
+            LinearLayer(2, 2, generator=RNG),
+            ReLULayer(),
+            LinearLayer(2, 2, generator=RNG),
+            SigmoidLayer(),
+            LinearLayer(2, 2, generator=RNG),
+            SigmoidLayer()
+        )
+    }
+
+    learning_rate = 0.01
+    epochs = 10
+    results = {}
+
+    for model_name in models:
+        model = models[model_name]
+        criterion = CrossEntropyLossLayer()
+        optimizer = SGDOptimizer(model.parameters(), lr=learning_rate)
+        
+        print(f"Training {model_name}...")
+        data = train(train_loader, model, criterion, optimizer, val_loader, epochs)
+        
+        results[model_name] = data
+        results[model_name]["model"] = model
+
+    return results
 
 @problem.tag("hw3-A")
 def accuracy_score(model, dataloader) -> float:
@@ -83,7 +140,18 @@ def accuracy_score(model, dataloader) -> float:
         - This is similar to MSE accuracy_score function,
             but there will be differences due to slightly different targets in dataloaders.
     """
-    raise NotImplementedError("Your Code Goes Here")
+    num_correct = 0
+    num_total = 0
+
+    with torch.no_grad():
+        for X, y in dataloader:
+            pred = model(X)
+            pred_labels = torch.argmax(pred, dim=1)
+
+            num_correct += (pred_labels == y).sum().item()
+            num_total += y.size(0)
+
+    return num_correct / num_total
 
 
 @problem.tag("hw3-A", start_line=7)
@@ -109,7 +177,38 @@ def main():
     dataset_test = TensorDataset(torch.from_numpy(x_test).float(), torch.from_numpy(y_test))
 
     ce_configs = crossentropy_parameter_search(dataset_train, dataset_val)
-    raise NotImplementedError("Your Code Goes Here")
+    plt.figure(figsize=(12, 8))
+    for model_name in ce_configs:
+        data = ce_configs[model_name]
+
+        c = np.random.rand(3,)
+        plt.plot(data['train'], '-', label=f'{model_name} - Train', c=c)
+        plt.plot(data['val'], '--', label=f'{model_name} - Validation', c=c)
+
+    plt.xlabel('Epochs')
+    plt.ylabel('Cross Entropy Loss')
+    plt.title('Train and Validation Losses')
+    plt.legend()
+    plt.show()
+
+    best_model_name = None
+    best_model = None
+    best_val_loss = float('inf')
+    for model_name, data in ce_configs.items():
+        min_val_loss = min(data['val'])
+        if min_val_loss < best_val_loss:
+            best_val_loss = min_val_loss
+            best_model_name = model_name
+            best_model = data['model']
+
+    print(f'Best model configuration: {best_model_name} with minimum validation loss of {best_val_loss}')
+
+    test_loader = DataLoader(dataset_test, batch_size=32, shuffle=False)
+    plot_model_guesses(test_loader, best_model)
+
+    accuracy = accuracy_score(best_model, test_loader)
+    print(f'Accuracy of the best model on test set: {accuracy}')
+
 
 
 if __name__ == "__main__":
