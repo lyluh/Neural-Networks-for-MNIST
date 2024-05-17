@@ -80,8 +80,6 @@ def train(
                     loss = criterion(pred, y)
                     total_loss_val += loss.item()
 
-                    # loss.backward()
-                    # optimizer.step()
             average_val_loss = total_loss_val / len(val_loader)
             val_list.append(average_val_loss)
 
