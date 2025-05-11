@@ -103,25 +103,6 @@ Most errors with running code have to do with making sure the cse446 environment
 
 # Usage
 
-## Submission
-
-When you are done with coding run.
-```
-inv submit
-```
-this will generate a `.zip` file that should be uploaded to gradescope for automated grading.
-
-For example running:
-```
-inv submit
-```
-will result in `submission_<timestamp>.zip` generated, which should be submitted under corresponding homework coding assignment on gradescope.
-
-![gif visualizing submission process](./README_media/submit.gif)
-
-Note that if you do get a lot of `NotImplementedError("Your Code Goes Here")` errors when submitting to gradescope you .zip file might be in an improper format which makes autograder unable to detect it. **MAKE SURE TO USE `inv submit` if that happens.
-
-
 ## Testing
 In this class we will use unittest framework in python to automatically grade coding problems.
 Some of the tests are provided to you, so that you can validate your results.
